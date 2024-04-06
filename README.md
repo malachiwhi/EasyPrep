@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # The-Matrix- Easy Prep AI 
 CIS-FAMU Capstone project group with the Mobile Application Easy Prep AI
 
@@ -51,3 +52,7 @@ Here is a copy of our final project presentation. This includes out project post
 ![wireframeinfo](https://github.com/cis-famu/design-project-the-matrix/assets/111886958/74a22ee5-6d68-4382-9fa2-e664c8c53803)
 
 
+=======
+# EasyPrep
+AI appliction 
+>>>>>>> 9e2900229e251284ed54960df07c84461655e639
