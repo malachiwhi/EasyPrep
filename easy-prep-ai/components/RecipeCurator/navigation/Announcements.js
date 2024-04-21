@@ -1,21 +1,42 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert, Text } from 'react-native';
+import { db } from '../../../firebase'; // Make sure to import your firebase configuration
+import { collection, addDoc } from 'firebase/firestore'; // Import required Firestore functions
 
 const AdminAnnouncement = () => {
   const [announcement, setAnnouncement] = useState('');
   const [announcements, setAnnouncements] = useState([]);
 
-  const postAnnouncement = () => {
+  const createAnnouncement = async () => {
+    try {
+      const announcementRef = await addDoc(collection(db, 'Announcements'), {
+        Text: announcement, // Use the state variable correctly
+      });
+      console.log('Announcement added with ID: ', announcementRef.id);
+      // Optionally, you could add the announcement ID to your local state for reference
+      return announcementRef.id; // Return the new document ID
+    } catch (error) {
+      console.error('Error adding announcement: ', error);
+      Alert.alert('Error', 'Failed to post announcement');
+    }
+  };
+
+  const postAnnouncement = async () => {
     if (!announcement.trim()) {
       Alert.alert('Please enter an announcement');
       return;
     }
 
-    setAnnouncements(prevAnnouncements => [
-      ...prevAnnouncements,
-      { id: Math.random().toString(), text: announcement },
-    ]);
-    setAnnouncement(''); // Clear the input after posting
+    // First, save the announcement to Firestore and get the document ID
+    const newAnnouncementId = await createAnnouncement();
+    if (newAnnouncementId) {
+      // If the document was successfully created, add the announcement to local state
+      setAnnouncements(prevAnnouncements => [
+        ...prevAnnouncements,
+        { id: newAnnouncementId, text: announcement },
+      ]);
+      setAnnouncement('');
+    }
   };
 
   return (
@@ -23,7 +44,7 @@ const AdminAnnouncement = () => {
       <TextInput
         style={styles.input}
         value={announcement}
-        onChangeText={setAnnouncement}
+        onChangeText={setAnnouncement} // Update to modify the announcement state
         placeholder="Enter your announcement here..."
         multiline
       />

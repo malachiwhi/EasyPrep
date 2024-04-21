@@ -10,6 +10,8 @@ import Home from './Announcements';
 import DeleteRecipe from './DeleteRecipe';
 import Advertisements from './Advertisements'; 
 import Account1 from './Account1'; 
+import ChatScreen from './ChatScreen'; 
+import Messages from './Messages';
 
 
 
@@ -18,6 +20,7 @@ const SEARCH_RECIPES1 = 'Search1';
 const  DELETERECIPE = 'DeleteRecipe';
 const ADVERTISEMENTS = 'Advertisements';
 const ACCOUNT1 = 'Account1'; 
+const CHAT_SCREEN = 'ChatScreen'; 
 
 const Tab = createBottomTabNavigator(); 
 
@@ -53,8 +56,12 @@ export default function Main() {
                         options={{
                         tabBarLabel:"Account", 
                         tabBarIcon: ({color}) => <Icon name ="user" size={24} color={color} />
-                }}
-            />
+                }}/>
+                <Tab.Screen name={CHAT_SCREEN} component={ChatScreen} 
+                        options={{
+                        tabBarLabel:"Messages", 
+                        tabBarIcon: ({color}) => <Ionicons name ="chatbubble" size={24} color={color} />
+                }} />
             </Tab.Navigator>
     );
 }

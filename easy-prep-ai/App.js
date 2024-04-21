@@ -27,7 +27,15 @@ import DeleteRecipe from './components/RecipeCurator/navigation/DeleteRecipe.js'
 import Advertisements from './components/RecipeCurator/navigation/Advertisements.js';
 import ReportPage from './components/admin/navigation/ReportPage.js';
 import Account from './components/Prepper/navigation/Account.js';
+import FavoritesList from './components/Prepper/navigation/FavoritesList.js'; 
+import EditProfile from './components/Prepper/navigation/EditProfile.js'; 
 import Main2 from './components/admin/navigation/Main2.js'; 
+import ChangeRecipe from './components/Prepper/navigation/ChangeRecipe.js'
+import AnnouncementsPage from './components/Prepper/navigation/AnnouncementsPage.js'; 
+import UpdateRecipe from './components/Prepper/navigation/UpdateRecipe.js';
+import MessagingScreen from './components/Prepper/navigation/MessagingScreen.js';
+import ChatScreen from './components/Prepper/navigation/GenerateARecipe.js';
+import Messages from './components/RecipeCurator/navigation/Messages.js';
 
 
 const RootStack = createNativeStackNavigator();
@@ -55,12 +63,20 @@ export default function App() {
           <RootStack.Screen name="RecipeCuratorSignup" component={RecipeCuratorSignup}/>
           <RootStack.Screen name="AdminPage" component={AdminPage} />
           <RootStack.Screen name="Announcements" component={Announcements} /> 
+          <RootStack.Screen name="AnnouncementsPage" component={AnnouncementsPage} />
           <RootStack.Screen name="SearchUsers" component={SearchUsers} />
           <RootStack.Screen name="CreateRecipe" component={CreateRecipe} />
           <RootStack.Screen name="DeleteRecipe" component={DeleteRecipe} /> 
           <RootStack.Screen name="Advertisements" component={Advertisements} /> 
           <RootStack.Screen name="Account" component={Account} /> 
+          <RootStack.Screen name="FavoritesList" component={FavoritesList} /> 
           <RootStack.Screen name="Report Page" component={ReportPage} /> 
+          <RootStack.Screen name="EditProfile" component={EditProfile} /> 
+          <RootStack.Screen name="ChangeRecipe" component={ChangeRecipe} />
+          <RootStack.Screen name="UpdateRecipe" component={UpdateRecipe} />
+          <RootStack.Screen name="MessagingScreen" component={MessagingScreen} />
+          <RootStack.Screen name="ChatScreen" component={ChatScreen} />
+          <RootStack.Screen name="Messages" component={Messages} />
           <RootStack.Screen name ="Main2" component={Main2} options={{ headerShown: false }}/> 
           <RootStack.Screen name ="Main" component={Main} options={{ headerShown: false }}/> 
         </RootStack.Navigator>

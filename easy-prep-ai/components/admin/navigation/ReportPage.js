@@ -1,124 +1,94 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { db } from '../../../firebase';
+import { Text, View, StyleSheet, ScrollView, TextInput } from 'react-native';
 import { collection, query, getDocs } from 'firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
-import { printAsync } from 'react-native-print';
+import { db } from '../../../firebase';
 
-
-
-
-const ReportPage = () => {
-  const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [reportData, setReportData] = useState(null);
-  const [showReport, setShowReport] = useState(false);
-  const navigation = useNavigation(); // If you plan to use navigation
+const RecipeCategoryReport = () => {
+  const [categoryCounts, setCategoryCounts] = useState({});
+  const [ingredient, setIngredient] = useState('');
+  const [ingredientCount, setIngredientCount] = useState(0);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      const q = query(collection(db, 'Category'));
-      const querySnapshot = await getDocs(q);
-      const categoriesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setCategories(categoriesData.map(doc => doc.name));
+    const fetchCategoryCounts = async () => {
+      const snapshot = await getDocs(collection(db, 'RecipeIngredients'));
+      const counts = {};
+      let ingredientRecipeCount = 0; // Initialize the ingredient count
+
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const category = data.category;
+        if (counts[category]) {
+          counts[category] += 1;
+        } else {
+          counts[category] = 1;
+        }
+
+        // Check if the recipe contains the specified ingredient
+        if (data.ingredients && data.ingredients.includes(ingredient.toLowerCase())) {
+          ingredientRecipeCount += 1;
+        }
+      });
+
+      setCategoryCounts(counts);
+      setIngredientCount(ingredientRecipeCount);
     };
 
-    fetchCategories();
-  }, []);
-
-  const generateReportAndPrint = async () => {
-    const reportContent = `<h1>Report for ${selectedCategory}</h1><p>Your dynamic report content here...</p>`;
-    // Create an options object with your report content. Assuming it's HTML.
-    const options = {
-      html: reportContent,
-    };
-    // Call printAsync with the options object directly without using Print.
-    try {
-      const result = await printAsync(options);
-      console.log(result);
-    } catch (error) {
-      console.error(error);
-    }
-};
-
-
-  const closeReport = () => {
-    setShowReport(false);
-    setReportData(null);
-  };
+    fetchCategoryCounts();
+  }, [ingredient]); // Dependency on the ingredient state to re-fetch when it changes
 
   return (
-    <View style={styles.container}>
-      <Picker
-        selectedValue={selectedCategory}
-        style={styles.picker}
-        onValueChange={(itemValue) => setSelectedCategory(itemValue)}>
-        <Picker.Item label="Select Category" value="" />
-        {categories.map((category, index) => (
-          <Picker.Item key={index} label={category} value={category} />
-        ))}
-      </Picker>
-      <TouchableOpacity style={styles.button} onPress={generateReportAndPrint}>
-        <Text style={styles.buttonText}>Generate Report</Text>
-      </TouchableOpacity>
-      {showReport && (
-        <View style={styles.reportContainer}>
-          <TouchableOpacity style={styles.closeButton} onPress={closeReport}>
-            <Text style={styles.closeButtonText}>X</Text>
-          </TouchableOpacity>
-          <Text style={styles.reportText}>Report:</Text>
-          {/* Displaying the generated report content */}
-          {/* Consider implementing a method to set and display reportData based on selectedCategory */}
-          <Text>{reportData || "Report content will appear here."}</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.heading}>Recipes per Category</Text>
+      {Object.entries(categoryCounts).map(([category, count]) => (
+        <View style={styles.item} key={category}>
+          <Text style={styles.text}>{category}: {count} recipes</Text>
         </View>
-      )}
-    </View>
+      ))}
+      <TextInput
+        style={styles.input}
+        placeholder="Enter an ingredient to count recipes"
+        onChangeText={text => setIngredient(text)}
+        value={ingredient}
+      />
+      <Text style={styles.reportText}>
+        {ingredient ? `Total recipes containing "${ingredient}": ${ingredientCount}` : "Enter an ingredient to see counts"}
+      </Text>
+    </ScrollView>
   );
 };
-  
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
   },
-  picker: {
-    width: '80%',
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#007bff',
+  item: {
+    marginBottom: 10,
     padding: 10,
-    borderRadius: 5,
+    backgroundColor: '#f0f0f0',
   },
-  buttonText: {
-    color: '#fff',
+  text: {
     fontSize: 16,
   },
-  reportContainer: {
+  input: {
+    fontSize: 16,
     marginTop: 20,
+    marginBottom: 10,
     padding: 10,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
     borderRadius: 5,
   },
   reportText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    padding: 5,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'red',
+    marginTop: 10,
   },
 });
 
-export default ReportPage;
+export default RecipeCategoryReport;

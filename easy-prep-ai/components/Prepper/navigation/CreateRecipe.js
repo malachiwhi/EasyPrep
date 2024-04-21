@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
-import { collection, addDoc } from 'firebase/firestore';
+import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { collection, addDoc, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
 const CreateRecipe = () => {
@@ -8,11 +8,11 @@ const CreateRecipe = () => {
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
   const [dietaryRestriction, setDietaryRestriction] = useState('');
-  const [ingredient, setIngredients] = useState(''); 
+  const [ingredient, setIngredients] = useState('');
 
   const createRecipe = async () => {
     try {
-      // Add the recipe to the 'Recipe' collection
+      // Create the recipe document
       const recipeRef = await addDoc(collection(db, 'Recipe'), {
         Title: title,
         Category: category,
@@ -20,14 +20,22 @@ const CreateRecipe = () => {
         DietaryRestriction: dietaryRestriction,
         Ingredients: ingredient
       });
+
+      // Immediately update the document to include its own ID
+      await updateDoc(recipeRef, { RecipeID: recipeRef.id });
+
       console.log('Recipe added with ID: ', recipeRef.id);
+      Alert.alert(`Recipe created successfully with ID: ${recipeRef.id}`); // User feedback
+
+      // Clear the form fields
       setTitle('');
       setCategory('');
       setDescription('');
       setDietaryRestriction('');
-      setIngredients(''); 
+      setIngredients('');
     } catch (error) {
       console.error('Error adding recipe: ', error);
+      Alert.alert('Error creating recipe: ' + error.message); // Error feedback
     }
   };
 

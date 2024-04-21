@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { getDoc, getDocs, collection, doc, updateDoc, arrayUnion, addDoc } from 'firebase/firestore';
 import { db,auth } from '../../../firebase';
 import FloatingButton from './FloatingButton';
+import { useNavigation} from '@react-navigation/native';
 
 const App = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -14,6 +15,7 @@ const App = () => {
   const [postId, setPostId] = useState('');
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
   const [advertisements, setAdvertisements] = useState([]);
+  const navigation = useNavigation();
 
   const fetchPosts = async () => {
     try {
@@ -134,6 +136,11 @@ const addRecipeToFavorites = async (recipeId) => {
   return (
     <View style={styles.container}>
       <View style={styles.advertisementContainer}>
+      <TouchableOpacity
+        style={styles.announcementButton}
+        onPress={() => navigation.navigate('AnnouncementsPage')}>
+        <Icon name="bullhorn" size={20} color="#4e9af1" />
+      </TouchableOpacity>
         <Text style={styles.advertisementText}>Advertisements: </Text>
         <FlatList
           horizontal
@@ -144,6 +151,7 @@ const addRecipeToFavorites = async (recipeId) => {
               <Text>{item.ingredientName}</Text>
             </TouchableOpacity>
           )}
+
         />
       </View>
       {isLoading ? (
@@ -222,6 +230,17 @@ const styles = StyleSheet.create({
     marginTop: 50,
     backgroundColor: '#f0f0f0', // Lighter background
   },
+
+  announcementButton: {
+    position: 'absolute', // Position the button over your component
+    right: 10, // Distance from the right
+    top: 10, // Distance from the top
+    padding: 10, // Padding for the touchable area
+    backgroundColor: 'white', // Button background color
+    borderRadius: 30, // Rounded corners for the button
+    elevation: 3, // Shadow for the button
+  },
+
   advertisementContainer: {
     flexDirection: 'row',
     alignItems: 'center',
